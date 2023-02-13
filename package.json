@@ -1,0 +1,14 @@
+{
+  "name": "msindex",
+  "scripts": {
+    "update": "bun run update.ts"
+  },
+  "dependencies": {
+    "croner": "^5.3.5",
+    "fred-api": "^2.0.1",
+    "fs": "^0.0.1-security",
+    "jsdom": "^20.0.3",
+    "papaparse": "^5.3.2",
+    "xml-js": "^1.6.11"
+  }
+}
