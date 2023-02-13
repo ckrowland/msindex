@@ -8,7 +8,7 @@ function makeGraph(graphName){
 	var height = 380;
 	var padding = 30;
 	var margin = {top: 20, right: 30, bottom: 30, left: 25};
-	var filename = "./static/csv/" + graphName + ".csv";
+	var filename = "./csv/" + graphName + ".csv";
 	var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 	d3.csv(filename, function(d) {
