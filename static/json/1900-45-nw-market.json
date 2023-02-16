@@ -226,37 +226,37 @@
  },
  {
    "year": 1945,
-   "netWorthAtCurrentPrices": 208987,
+   "netWorthAtCurrentPrices": 208987.0,
    "stockMarketAtCurrentPrices": 114321.463397907
  },
  {
    "year": 1946,
-   "netWorthAtCurrentPrices": 225051,
+   "netWorthAtCurrentPrices": 225051.0,
    "stockMarketAtCurrentPrices": 99173.2894021739
  },
  {
    "year": 1947,
-   "netWorthAtCurrentPrices": 261631,
+   "netWorthAtCurrentPrices": 261631.0,
    "stockMarketAtCurrentPrices": 95830.9550618045
  },
  {
    "year": 1948,
-   "netWorthAtCurrentPrices": 284791,
+   "netWorthAtCurrentPrices": 284791.0,
    "stockMarketAtCurrentPrices": 95467.8087811131
  },
  {
    "year": 1949,
-   "netWorthAtCurrentPrices": 293929,
+   "netWorthAtCurrentPrices": 293929.0,
    "stockMarketAtCurrentPrices": 104836.157688608
  },
  {
    "year": 1950,
-   "netWorthAtCurrentPrices": 317050,
+   "netWorthAtCurrentPrices": 317050.0,
    "stockMarketAtCurrentPrices": 125747.946149029
  },
  {
    "year": 1951,
-   "netWorthAtCurrentPrices": 351535,
+   "netWorthAtCurrentPrices": 351535.0,
    "stockMarketAtCurrentPrices": 148218.175729708
  }
 ]
