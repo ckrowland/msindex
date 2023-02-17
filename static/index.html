@@ -6,8 +6,8 @@
         <title>MS Index</title>
         <link rel="shortcut icon" type="image/png" href="/img/conifer.png">
         <link rel="stylesheet" type="text/css" href="/css/global.css">
-        <script src="/js/d3.v7.min.js"></script>
-        <script src="/js/main.js"></script>
+        <script type="module" src="/js/d3.v7.min.js"></script>
+        <script type="module" src="/js/main.js"></script>
     </head>
 
     <body>
@@ -16,8 +16,8 @@
             <div class="body">
                 <p id="currentindex"></p>
                 <div class="tab">
-                    <button class="tablinks"onclick="openGraph(event, 'max', true)">Max Quartiles</button>
-                    <button class="tablinks" id="maxbutton" onclick="openGraph(event, 'max')">Max</button>
+                    <button class="tablinks" onclick="openGraph(event, 'max', true)">Max Quartiles</button>
+                    <button class="tablinks" id="maxbutton">Max</button>
                     <button class="tablinks" onclick="openGraph(event, 'tenyear')">10 Year</button>
                     <button class="tablinks" onclick="openGraph(event, 'fiveyear')">5 Year</button>
                     <button class="tablinks" onclick="openGraph(event, 'oneyear')">1 Year</button>

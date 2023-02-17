@@ -1,6 +1,42 @@
-makeGraph("oneyear");
-makeGraph("fiveyear");
-makeGraph("tenyear");
+var maxButton = document.getElementById('maxbutton');
+maxButton.addEventListener('click', openGraph(event, 'max'));
+
+function openGraph(evt, graphName, quartiles = false) {
+  // Declare all variables
+  var i, tabcontent, tablinks;
+
+  // Get all elements with class="tabcontent" and hide them
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  // Get all elements with class="tablinks" and remove the class "active"
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  // Show the current tab, and add an "active" class to the button that opened the tab
+  document.getElementById(graphName).style.display = "block";
+
+  const all_quartiles = document.getElementById(graphName).getElementsByClassName("quartile");
+  for (let i = 0; i < all_quartiles.length; i++){
+    all_quartiles[i].style.display = "none";
+  }
+  if (quartiles) {
+    const all_quartiles = document.getElementById(graphName).getElementsByClassName("quartile");
+    if (all_quartiles[0].style.display === "none") {
+      for (let i = 0; i < all_quartiles.length; i++){
+        all_quartiles[i].style.display = "block";
+      }
+    }
+  }
+  maxButton.className += " active";
+}
+//makeGraph("oneyear");
+//makeGraph("fiveyear");
+//makeGraph("tenyear");
 makeGraph("max");
 
 function makeGraph(graphName){
@@ -8,46 +44,48 @@ function makeGraph(graphName){
 	var height = 380;
 	var padding = 30;
 	var margin = {top: 20, right: 30, bottom: 30, left: 25};
-	var filename = "./csv/" + graphName + ".csv";
+	var filename = "./json/" + graphName + ".json";
 	var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-	d3.csv(filename, function(d) {
-		return {
-			date: new Date(d.date + " 00:00:00"),
-			value: +d.value
-		};
-	}).then(function(data) {
+	d3.json(filename).then(function(rawData) {
+        const data = rawData.map(({ date, ...object }) => ({
+            ...object,
+            date: new Date(date + " 00:00:00"),
+        }));
+        console.log(data);
 		var options = {year:'numeric', month:'long', day:'numeric'};
-		var lastdate = data[data.length - 1].date.toLocaleDateString("en-US", options);
-		var lastvalue = (data[data.length - 1].value).toFixed(2);
-		var weekday = data[data.length - 1].date.getDay();
+        //var lastDate = new Date(data[data.length - 1].date + " 00:00:00");
+        var lastDate = data[data.length - 1].date;
+		var lastDateStr = lastDate.toLocaleDateString("en-US", options);
+		var lastvalue = (data[data.length - 1].index).toFixed(2);
+		var weekday = lastDate.getDay();
 
-		var update = "On " + days[weekday] + " " + lastdate + " the MS Index was at " + lastvalue;
+		var update = "On " + days[weekday] + " " + lastDateStr + " the MS Index was at " + lastvalue;
 		d3.select("#currentindex").text(update)
 
-		x = d3.scaleUtc()
+		var x = d3.scaleUtc()
 			.domain(d3.extent(data, d => d.date))
 			.range([margin.left, width - margin.right])
 
-		y = d3.scaleLinear()
-			.domain([0, d3.max(data, d => d.value)]).nice()
+		var y = d3.scaleLinear()
+			.domain([0, d3.max(data, d => d.index)]).nice()
 			.range([height - margin.bottom, margin.top])
 
-		xAxis = g => g
+		var xAxis = g => g
 			.attr("transform", `translate(0,${height - margin.bottom})`)
 			.call(d3.axisBottom(x).ticks(width / 90).tickSizeOuter(0))
 
 
-		yAxis = g => g
+		var yAxis = g => g
 		.attr("transform", `translate(${margin.left},0)`)
 		.call(d3.axisLeft(y))
 		.call(g => g.select(".domain").remove())
 		.call(g => g.select(".tick:last-of-type text").clone()
 			.text(data.y))
 
-		line = d3.line()
+		var line = d3.line()
 			.x(function(d) { return x(d.date); })
-			.y(function(d) { return y(d.value); });
+			.y(function(d) { return y(d.index); });
 
 		var graphId = "#".concat(graphName);
 		var svg = d3.select(graphId)
@@ -71,7 +109,7 @@ function makeGraph(graphName){
 		  .attr("stroke-linecap", "round")
 		  .attr("d", line);
 
-		const points = Array.from(data, x => x.value);
+		const points = Array.from(data, x => x.index);
 		const asc = arr => arr.sort((a, b) => a - b);
 		const sum = arr => arr.reduce((a, b) => a + b, 0);
 		const mean = arr => sum(arr) / arr.length;
@@ -105,36 +143,3 @@ function makeGraph(graphName){
   });
 }
 
-function openGraph(evt, graphName, quartiles = false) {
-  // Declare all variables
-  var i, tabcontent, tablinks;
-
-  // Get all elements with class="tabcontent" and hide them
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-
-  // Get all elements with class="tablinks" and remove the class "active"
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-
-  // Show the current tab, and add an "active" class to the button that opened the tab
-  document.getElementById(graphName).style.display = "block";
-
-  const all_quartiles = document.getElementById(graphName).getElementsByClassName("quartile");
-  for (let i = 0; i < all_quartiles.length; i++){
-    all_quartiles[i].style.display = "none";
-  }
-  if (quartiles) {
-    const all_quartiles = document.getElementById(graphName).getElementsByClassName("quartile");
-    if (all_quartiles[0].style.display === "none") {
-      for (let i = 0; i < all_quartiles.length; i++){
-        all_quartiles[i].style.display = "block";
-      }
-    }
-  }
-  evt.currentTarget.className += " active";
-}
