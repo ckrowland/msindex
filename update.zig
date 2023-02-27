@@ -77,10 +77,16 @@ const fredRequest = struct {
 };
 
 fn getFredSeries(alloc: Allocator, params: fredRequest) ![]u8 {
+    const apiKey = std.os.getenv("FRED_KEY").?;
     const url = try std.fmt.allocPrint(
         alloc,
-        "https://api.stlouisfed.org/fred/series/observations?series_id={s}&api_key=89f2a06210de32e0ea49e2aa9106543a&file_type=json&observation_start={s}&frequency={s}",
-        .{ params.seriesID, params.observationStart, params.frequency },
+        "https://api.stlouisfed.org/fred/series/observations?series_id={s}&api_key={s}&file_type=json&observation_start={s}&frequency={s}",
+        .{
+            params.seriesID,
+            apiKey,
+            params.observationStart,
+            params.frequency,
+        },
     );
     defer alloc.free(url);
 
