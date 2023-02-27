@@ -11,7 +11,7 @@ pub fn main() !void {
         .port = 3000,
         .on_request = on_request,
         .public_folder = "static",
-        .log = true,
+        .log = false,
     });
     try listener.listen();
 
@@ -19,7 +19,7 @@ pub fn main() !void {
 
     // start worker threads
     zap.start(.{
-        .threads = 1,
-        .workers = 1,
+        .threads = 4,
+        .workers = 4,
     });
 }
