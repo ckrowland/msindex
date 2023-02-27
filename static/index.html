@@ -16,17 +16,18 @@
             <div class="body">
                 <p id="currentindex"></p>
                 <div class="tab">
-                    <button class="tablinks" onclick="openGraph(event, 'max', true)">Max Quartiles</button>
-                    <button class="tablinks" id="maxbutton">Max</button>
-                    <button class="tablinks" onclick="openGraph(event, 'tenyear')">10 Year</button>
-                    <button class="tablinks" onclick="openGraph(event, 'fiveyear')">5 Year</button>
-                    <button class="tablinks" onclick="openGraph(event, 'oneyear')">1 Year</button>
+                    <button class="tablinks" id="maxQButton">Max Quartiles</button>
+                    <button class="tablinks" id="maxButton">Max</button>
+                    <button class="tablinks" id="tenYearButton">10 Year</button>
+                    <button class="tablinks" id="fiveYearButton">5 Year</button>
+                    <button class="tablinks" id="oneYearButton">1 Year</button>
                 </div>
 
+                <div id="maxQ" class="tabcontent"></div>
                 <div id="max" class="tabcontent"></div>
-                <div id="tenyear" class="tabcontent"></div>
-                <div id="fiveyear" class="tabcontent"></div>
-                <div id="oneyear" class="tabcontent"></div>
+                <div id="tenYear" class="tabcontent"></div>
+                <div id="fiveYear" class="tabcontent"></div>
+                <div id="oneYear" class="tabcontent"></div>
                 <h2>What is it?</h2>
                 <p>
                     An index presented in the book: The Dao of Capital
@@ -83,10 +84,10 @@
                 <h2>Data Files</h2>
                 <p>The MS Index data files can be downloaded here</p>
                 <ul>
-                    <li><a href="/csv/max.csv">Max</a></li>
-                    <li><a href="/csv/tenyear.csv">Ten Year</a></li>
-                    <li><a href="/csv/fiveyear.csv">Five Year</a></li>
-                    <li><a href="/csv/oneyear.csv">One Year</a></li>
+                    <li><a href="/json/max.json">Max</a></li>
+                    <li><a href="/json/tenYear.json">Ten Year</a></li>
+                    <li><a href="/json/fiveYear.json">Five Year</a></li>
+                    <li><a href="/json/oneYear.json">One Year</a></li>
                 </ul>
 
                 <p>
@@ -98,13 +99,8 @@
                 <p>
                     Feel free to contact me with suggestions.
                     <a href="mailto:connor.k.rowland@icloud.com">Email</a>
-                    or
-                    <a href="https://twitter.com/connorkrowland">Twitter</a>
                 </p>
             </div>
         </div>
-        <script>
-          document.getElementById("maxbutton").click();
-        </script>
     </body>
 </html>

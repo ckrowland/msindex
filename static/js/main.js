@@ -1,7 +1,24 @@
-var maxButton = document.getElementById('maxbutton');
-maxButton.addEventListener('click', openGraph(event, 'max'));
+var maxQButton = document.getElementById('maxQButton');
+var maxButton = document.getElementById('maxButton');
+var tenYearButton = document.getElementById('tenYearButton');
+var fiveYearButton = document.getElementById('fiveYearButton');
+var oneYearButton = document.getElementById('oneYearButton');
 
-function openGraph(evt, graphName, quartiles = false) {
+makeGraph("oneYear");
+makeGraph("fiveYear");
+makeGraph("tenYear");
+makeGraph("max", true);
+makeGraph("max");
+
+maxQButton.addEventListener('click', openGraph);
+maxButton.addEventListener('click', openGraph);
+tenYearButton.addEventListener('click', openGraph);
+fiveYearButton.addEventListener('click', openGraph);
+oneYearButton.addEventListener('click', openGraph);
+
+document.getElementById("maxButton").click();
+
+function openGraph(evt) {
   // Declare all variables
   var i, tabcontent, tablinks;
 
@@ -18,28 +35,13 @@ function openGraph(evt, graphName, quartiles = false) {
   }
 
   // Show the current tab, and add an "active" class to the button that opened the tab
-  document.getElementById(graphName).style.display = "block";
+  let name = evt.currentTarget.id;
+  let chartName = name.substring(0, name.length - 6);
 
-  const all_quartiles = document.getElementById(graphName).getElementsByClassName("quartile");
-  for (let i = 0; i < all_quartiles.length; i++){
-    all_quartiles[i].style.display = "none";
-  }
-  if (quartiles) {
-    const all_quartiles = document.getElementById(graphName).getElementsByClassName("quartile");
-    if (all_quartiles[0].style.display === "none") {
-      for (let i = 0; i < all_quartiles.length; i++){
-        all_quartiles[i].style.display = "block";
-      }
-    }
-  }
-  maxButton.className += " active";
+  document.getElementById(chartName).style.display = "block";
 }
-//makeGraph("oneyear");
-//makeGraph("fiveyear");
-//makeGraph("tenyear");
-makeGraph("max");
 
-function makeGraph(graphName){
+function makeGraph(graphName, quartiles = false){
 	var width = 500;
 	var height = 380;
 	var padding = 30;
@@ -52,9 +54,7 @@ function makeGraph(graphName){
             ...object,
             date: new Date(date + " 00:00:00"),
         }));
-        console.log(data);
 		var options = {year:'numeric', month:'long', day:'numeric'};
-        //var lastDate = new Date(data[data.length - 1].date + " 00:00:00");
         var lastDate = data[data.length - 1].date;
 		var lastDateStr = lastDate.toLocaleDateString("en-US", options);
 		var lastvalue = (data[data.length - 1].index).toFixed(2);
@@ -88,6 +88,9 @@ function makeGraph(graphName){
 			.y(function(d) { return y(d.index); });
 
 		var graphId = "#".concat(graphName);
+        if (quartiles) {
+            graphId = graphId.concat("Q");
+        }
 		var svg = d3.select(graphId)
 			.append("svg")
 			.attr("viewBox", [0, 0, width, height])
@@ -109,37 +112,37 @@ function makeGraph(graphName){
 		  .attr("stroke-linecap", "round")
 		  .attr("d", line);
 
-		const points = Array.from(data, x => x.index);
-		const asc = arr => arr.sort((a, b) => a - b);
-		const sum = arr => arr.reduce((a, b) => a + b, 0);
-		const mean = arr => sum(arr) / arr.length;
-		const quantile = (arr, q) => {
-		    const sorted = asc(arr);
-		    const pos = (sorted.length - 1) * q;
-		    const base = Math.floor(pos);
-		    const rest = pos - base;
-		    if (sorted[base + 1] !== undefined) {
-			return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
-		    } else {
-			return sorted[base];
-		    }
-		};
+        if (quartiles) {
+		    const points = Array.from(data, x => x.index);
+		    const asc = arr => arr.sort((a, b) => a - b);
+		    const sum = arr => arr.reduce((a, b) => a + b, 0);
+		    const mean = arr => sum(arr) / arr.length;
+		    const quantile = (arr, q) => {
+		        const sorted = asc(arr);
+		        const pos = (sorted.length - 1) * q;
+		        const base = Math.floor(pos);
+		        const rest = pos - base;
+		        if (sorted[base + 1] !== undefined) {
+		    	return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+		        } else {
+		    	return sorted[base];
+		        }
+		    };
 
-		const q25 = arr => quantile(arr, .25);
-		const q50 = arr => quantile(arr, .50);
-		const q75 = arr => quantile(arr, .75);
-		const quartiles = [q25(points), q50(points), q75(points)]
-		quartiles.forEach(function (x, index) {
-		    svg.append("line")
-		      .style("stroke", "grey")
-		      .style("display", "none")
-		      .attr("class", "quartile")
-		      .attr("x1", 30)
-		      .attr("y1", y(x))
-		      .attr("x2", 475)
-		      .attr("y2", y(x));
-		});
-
+		    const q25 = arr => quantile(arr, .25);
+		    const q50 = arr => quantile(arr, .50);
+		    const q75 = arr => quantile(arr, .75);
+		    const quartiles = [q25(points), q50(points), q75(points)]
+		    quartiles.forEach(function (x, index) {
+		        svg.append("line")
+		          .style("stroke", "grey")
+		          .attr("class", "quartile")
+		          .attr("x1", 30)
+		          .attr("y1", y(x))
+		          .attr("x2", 475)
+		          .attr("y2", y(x));
+		    });
+        }
   });
 }
 

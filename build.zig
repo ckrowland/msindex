@@ -1,44 +1,70 @@
-const Builder = @import("std").build.Builder;
+const std = @import("std");
 
-pub fn build(b: *Builder) void {
+pub fn build(b: *std.build.Builder) !void {
     const target = b.standardTargetOptions(.{});
+    // Standard release options allow the person running `zig build` to select
+    // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
     const optimize = b.standardOptimizeOption(.{});
+
     const facil_dep = b.dependency("facil.io", .{
         .target = target,
         .optimize = optimize,
     });
-    const zap = b.dependency("zap", .{
-        .target = target,
-        .optimize = optimize,
+
+    // create a module to be used internally.
+    var zap_module = b.createModule(.{
+        .source_file = .{ .path = "src/zap.zig" },
     });
 
-    const exe = b.addExecutable(.{
-        .name = "msindex",
-        .root_source_file = .{ .path = "main.zig" },
-        .target = target,
-        .optimize = optimize,
-    });
+    // register the module so it can be referenced
+    // using the package manager.
+    // TODO: How to automatically integrate the
+    // facil.io dependency with the module?
+    try b.modules.put(b.dupe("zap"), zap_module);
 
-    exe.linkLibrary(facil_dep.artifact("facil.io"));
-    exe.addModule("zap", zap.module("zap"));
+    inline for ([_]struct {
+        name: []const u8,
+        src: []const u8,
+    }{
+        .{ .name = "main", .src = "main.zig" },
+        .{ .name = "update", .src = "update.zig" },
+    }) |excfg| {
+        const ex_name = excfg.name;
+        const ex_src = excfg.src;
+        const ex_build_desc = try std.fmt.allocPrint(
+            b.allocator,
+            "build the {s} example",
+            .{ex_name},
+        );
+        const ex_run_stepname = try std.fmt.allocPrint(
+            b.allocator,
+            "run-{s}",
+            .{ex_name},
+        );
+        const ex_run_stepdesc = try std.fmt.allocPrint(
+            b.allocator,
+            "run the {s} example",
+            .{ex_name},
+        );
+        const example_run_step = b.step(ex_run_stepname, ex_run_stepdesc);
+        const example_step = b.step(ex_name, ex_build_desc);
 
-    const run_step = b.step("run", "Run the app");
-    const run_cmd = exe.run();
-    run_step.dependOn(&run_cmd.step);
+        var example = b.addExecutable(.{
+            .name = ex_name,
+            .root_source_file = .{ .path = ex_src },
+            .target = target,
+            .optimize = optimize,
+        });
 
-    b.default_step.dependOn(&exe.step);
-    b.installArtifact(exe);
+        example.linkLibrary(facil_dep.artifact("facil.io"));
 
+        example.addModule("zap", zap_module);
 
-    const updateExe = b.addExecutable(.{
-        .name = "update",
-        .root_source_file = .{ .path = "update.zig" },
-        .target = target,
-        .optimize = optimize,
-    });
-    const run_update_step = b.step("run-update", "Run update process");
-    const run_update_cmd = updateExe.run();
-    run_update_step.dependOn(&run_update_cmd.step);
-    b.installArtifact(updateExe);
-    b.default_step.dependOn(&updateExe.step);
+        const example_run = example.run();
+        example_run_step.dependOn(&example_run.step);
+
+        // install the artifact - depending on the "example"
+        const example_build_step = b.addInstallArtifact(example);
+        example_step.dependOn(&example_build_step.step);
+    }
 }
