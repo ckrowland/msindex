@@ -2,32 +2,19 @@ const std = @import("std");
 
 pub fn build(b: *std.build.Builder) !void {
     const target = b.standardTargetOptions(.{});
-    // Standard release options allow the person running `zig build` to select
-    // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
     const optimize = b.standardOptimizeOption(.{});
 
-    const facil_dep = b.dependency("facil.io", .{
+    var zap = b.dependency("zap", .{
         .target = target,
         .optimize = optimize,
     });
-
-    // create a module to be used internally.
-    var zap_module = b.createModule(.{
-        .source_file = .{ .path = "src/zap.zig" },
-    });
-
-    // register the module so it can be referenced
-    // using the package manager.
-    // TODO: How to automatically integrate the
-    // facil.io dependency with the module?
-    try b.modules.put(b.dupe("zap"), zap_module);
 
     inline for ([_]struct {
         name: []const u8,
         src: []const u8,
     }{
-        .{ .name = "main", .src = "main.zig" },
-        .{ .name = "update", .src = "update.zig" },
+        .{ .name = "main", .src = "src/main.zig" },
+        .{ .name = "update", .src = "src/update.zig" },
     }) |excfg| {
         const ex_name = excfg.name;
         const ex_src = excfg.src;
@@ -56,11 +43,10 @@ pub fn build(b: *std.build.Builder) !void {
             .optimize = optimize,
         });
 
-        example.linkLibrary(facil_dep.artifact("facil.io"));
+        example.addModule("zap", zap.module("zap"));
+        example.linkLibrary(zap.artifact("facil.io"));
 
-        example.addModule("zap", zap_module);
-
-        const example_run = example.run();
+        const example_run = b.addRunArtifact(example);
         example_run_step.dependOn(&example_run.step);
 
         // install the artifact - depending on the "example"

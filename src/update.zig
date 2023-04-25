@@ -180,7 +180,7 @@ fn writeRecentGraph(
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
-    const preFedJson = @embedFile("./static/json/preFed.json");
+    const preFedJson = @embedFile("./preFed.json");
     const equityJson = try getFredSeries(allocator, .{
         .seriesID = "NCBCEL",
         .observationStart = "1952-01-01",
