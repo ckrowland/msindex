@@ -4,8 +4,8 @@
 
     .dependencies = .{
         .zap = .{
-            .url = "http://127.0.0.1:8000/release-0.0.11-localhost.tar.gz",
-            .hash = "122072531b7983335abffa3f9e66cc7f3153e4a697d3c332ed3811495eb1c75ab3f0",
+            .url = "https://github.com/zigzap/zap/archive/refs/tags/release-0.0.12-test.tar.gz",
+            .hash = "12201a5586b87c689c5c9f00075e84affc5207b0e2596efab0355025031da148d072",
         }    
     }
 }
