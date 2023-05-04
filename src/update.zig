@@ -220,10 +220,10 @@ pub fn main() !void {
         MSPoints.items[i].netWorth = v.value;
     }
 
-    const lastPoint = MSPoints.getLast();
+    const lastQuarterPoint = MSPoints.getLast();
     const sp500Json = try getFredSeries(allocator, .{
         .seriesID = "SP500",
-        .observationStart = &advanceMonth(&lastPoint.date, 1),
+        .observationStart = &advanceMonth(&lastQuarterPoint.date, 1),
         .frequency = "m",
     });
     std.debug.assert(std.json.validate(sp500Json));
@@ -233,27 +233,27 @@ pub fn main() !void {
         try MSPoints.append(.{
             .date = v.date,
             .equity = v.value * 10,
-            .netWorth = lastPoint.netWorth,
+            .netWorth = lastQuarterPoint.netWorth,
         });
     }
 
     const lastDay = try getFredSeries(allocator, .{
         .seriesID = "SP500",
-        .observationStart = &advanceMonth(&lastPoint.date, 1),
+        .observationStart = &advanceMonth(&lastQuarterPoint.date, 1),
         .frequency = "d",
     });
     std.debug.assert(std.json.validate(lastDay));
 
+    var recentPoint: MSPoint = undefined;
     try iter.parse(lastDay);
     while (iter.next()) |v| {
-        if (iter.next() == null) {
-            try MSPoints.append(.{
-                .date = v.date,
-                .equity = v.value * 10,
-                .netWorth = lastPoint.netWorth,
-            });
-        }
+        recentPoint = .{
+            .date = v.date,
+            .equity = v.value * 10,
+            .netWorth = lastQuarterPoint.netWorth,
+        };
     }
+    try MSPoints.append(recentPoint);
 
     var product: f64 = 1;
     for (MSPoints.items, 0..) |p, idx| {
