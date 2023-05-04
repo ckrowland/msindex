@@ -272,7 +272,7 @@ pub fn main() !void {
         }
     }
     try max.append(MSPoints.getLast());
-    _ = try std.fs.cwd().makeDir("static/json");
+    _ = std.fs.cwd().makeDir("static/json") catch {};
     const file = try std.fs.cwd().createFile(
         "static/json/max.json",
         .{ .read = true },
