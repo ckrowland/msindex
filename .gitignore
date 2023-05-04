@@ -1,6 +1,4 @@
 zig-out/
 zig-cache/
 zig-packages/
-node_modules/
-mydb.sqlite
-bun.lockb
+
