@@ -22,54 +22,6 @@ const MSPoint = struct {
     }
 };
 
-const FredIterator = struct {
-    tree: std.json.ValueTree = undefined,
-    parser: std.json.Parser,
-    index: usize = 0,
-
-    const ValuePair = struct {
-        date: [10]u8,
-        value: f64,
-    };
-
-    fn init(alloc: Allocator) !FredIterator {
-        var parser = std.json.Parser.init(alloc, .alloc_if_needed);
-        return FredIterator{
-            .parser = parser,
-        };
-    }
-
-    fn parse(self: *FredIterator, json: []const u8) !void {
-        self.index = 0;
-        self.parser.reset();
-        self.tree = try self.parser.parse(json);
-    }
-
-    fn deinit(self: *FredIterator) void {
-        self.tree.deinit();
-        self.parser.deinit();
-    }
-
-    pub fn next(self: *FredIterator) ?ValuePair {
-        const observations = self.tree.root.object.get("observations").?;
-        const arrayItems = observations.array.items;
-        for (arrayItems[self.index..]) |value| {
-            self.index += 1;
-            const dateStr = value.object.get("date").?.string;
-            const valueStr = value.object.get("value").?.string;
-            const valueFloat = std.fmt.parseFloat(f64, valueStr) catch {
-                continue;
-            };
-            return ValuePair{
-                .date = dateStr[0..10].*,
-                .value = valueFloat,
-            };
-        }
-
-        return null;
-    }
-};
-
 const fredRequest = struct {
     seriesID: []const u8,
     observationStart: []const u8,
@@ -122,21 +74,21 @@ fn advanceMonth(date: []const u8, change: u32) [10]u8 {
 }
 
 fn appendPreFed(MSPoints: *std.ArrayList(MSPoint), json: []const u8) !void {
-    var parser = std.json.Parser.init(MSPoints.allocator, .alloc_if_needed);
-    defer parser.deinit();
-
-    var preFedTree = try parser.parse(json);
+    const T = struct {
+        year: [4]u8,
+        netWorthAtCurrentPrices: f64,
+        stockMarketAtCurrentPrices: f64,
+    };
+    var preFedTree = try std.json.parseFromSlice([]T, MSPoints.allocator, json, .{});
     defer preFedTree.deinit();
 
     var fullDate: [10]u8 = undefined;
-    for (preFedTree.root.array.items) |v| {
-        const year = v.object.get("year").?.string;
-        const equityStr = v.object.get("stockMarketAtCurrentPrices").?.string;
-        const netWorthStr = v.object.get("netWorthAtCurrentPrices").?.string;
+    for (preFedTree.value) |v| {
+        const year = v.year;
+        const equity = v.stockMarketAtCurrentPrices;
+        const netWorth = v.netWorthAtCurrentPrices;
 
         _ = try std.fmt.bufPrint(&fullDate, "{s}-01-01", .{year});
-        const equity = try std.fmt.parseFloat(f64, equityStr);
-        const netWorth = try std.fmt.parseFloat(f64, netWorthStr);
 
         try MSPoints.append(.{
             .date = fullDate,
@@ -180,7 +132,13 @@ fn writeRecentGraph(
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
+    var MSPoints = std.ArrayList(MSPoint).init(allocator);
+    defer MSPoints.deinit();
+
     const preFedJson = @embedFile("./preFed.json");
+    std.debug.assert(try std.json.validate(allocator, preFedJson));
+    try appendPreFed(&MSPoints, preFedJson);
+
     const equityJson = try getFredSeries(allocator, .{
         .seriesID = "NCBCEL",
         .observationStart = "1952-01-01",
@@ -191,33 +149,39 @@ pub fn main() !void {
         .observationStart = "1952-01-01",
         .frequency = "q",
     });
-    std.debug.assert(try std.json.validate(allocator, preFedJson));
     std.debug.assert(try std.json.validate(allocator, equityJson));
     std.debug.assert(try std.json.validate(allocator, netWorthJson));
 
-    var MSPoints = std.ArrayList(MSPoint).init(allocator);
-    defer MSPoints.deinit();
-
-    try appendPreFed(&MSPoints, preFedJson);
-
-    var iter = try FredIterator.init(allocator);
-    defer iter.deinit();
-    try iter.parse(equityJson);
-    while (iter.next()) |v| {
+    var equity_tree = try std.json.parseFromSlice(std.json.Value, allocator, equityJson, .{});
+    defer equity_tree.deinit();
+    const items = equity_tree.value.object.get("observations").?.array.items;
+    for (items) |value| {
+        const date_str = value.object.get("date").?.string;
+        const equity_str = value.object.get("value").?.string;
+        const equity_float = std.fmt.parseFloat(f64, equity_str) catch {
+            continue;
+        };
         try MSPoints.append(.{
-            .date = advanceMonth(&v.date, 3),
-            .equity = v.value,
+            .date = advanceMonth(date_str, 3),
+            .equity = equity_float,
         });
     }
 
-    try iter.parse(netWorthJson);
+    var net_worth_tree = try std.json.parseFromSlice(std.json.Value, allocator, netWorthJson, .{});
+    defer net_worth_tree.deinit();
+    const nw_items = net_worth_tree.value.object.get("observations").?.array.items;
     var i: usize = 0;
-    while (iter.next()) |v| {
-        const updatedDate = advanceMonth(&v.date, 3);
-        while (!std.mem.eql(u8, &updatedDate, &MSPoints.items[i].date)) {
+    for (nw_items) |value| {
+        const date_str = value.object.get("date").?.string;
+        const updated_date = advanceMonth(date_str, 3);
+        while (!std.mem.eql(u8, &updated_date, &MSPoints.items[i].date)) {
             i += 1;
         }
-        MSPoints.items[i].netWorth = v.value;
+        const net_worth_str = value.object.get("value").?.string;
+        const net_worth_float = std.fmt.parseFloat(f64, net_worth_str) catch {
+            continue;
+        };
+        MSPoints.items[i].netWorth = net_worth_float;
     }
 
     const lastQuarterPoint = MSPoints.getLast();
@@ -227,12 +191,18 @@ pub fn main() !void {
         .frequency = "m",
     });
     std.debug.assert(try std.json.validate(allocator, sp500Json));
-
-    try iter.parse(sp500Json);
-    while (iter.next()) |v| {
+    var sp_tree = try std.json.parseFromSlice(std.json.Value, allocator, sp500Json, .{});
+    defer sp_tree.deinit();
+    const sp_items = sp_tree.value.object.get("observations").?.array.items;
+    for (sp_items) |value| {
+        const date_str = value.object.get("date").?.string;
+        const equity_str = value.object.get("value").?.string;
+        var equity_float = std.fmt.parseFloat(f64, equity_str) catch {
+            continue;
+        };
         try MSPoints.append(.{
-            .date = v.date,
-            .equity = v.value * 10,
+            .date = date_str[0..10].*,
+            .equity = equity_float * 10,
             .netWorth = lastQuarterPoint.netWorth,
         });
     }
@@ -244,22 +214,30 @@ pub fn main() !void {
     });
     std.debug.assert(try std.json.validate(allocator, lastDay));
 
-    var recentPoint: MSPoint = undefined;
-    try iter.parse(lastDay);
-    while (iter.next()) |v| {
-        recentPoint = .{
-            .date = v.date,
-            .equity = v.value * 10,
+    var last_tree = try std.json.parseFromSlice(std.json.Value, allocator, lastDay, .{});
+    defer last_tree.deinit();
+    const last_items = last_tree.value.object.get("observations").?.array.items;
+    var last_point: MSPoint = undefined;
+    for (last_items) |value| {
+        const date_str = value.object.get("date").?.string;
+        const equity_str = value.object.get("value").?.string;
+        var equity_float = std.fmt.parseFloat(f64, equity_str) catch {
+            continue;
+        };
+        last_point = .{
+            .date = date_str[0..10].*,
+            .equity = equity_float * 10,
             .netWorth = lastQuarterPoint.netWorth,
         };
     }
-    try MSPoints.append(recentPoint);
+    try MSPoints.append(last_point);
 
     var product: f64 = 1;
     for (MSPoints.items, 0..) |p, idx| {
         const unscaled = p.equity / p.netWorth;
         product *= unscaled;
-        const exponent: f32 = 1 / @intToFloat(f32, idx + 1);
+
+        const exponent: f32 = 1 / @floatFromInt(f32, idx + 1);
         const geo_mean = std.math.pow(f64, product, exponent);
         MSPoints.items[idx].index = unscaled / geo_mean;
     }
