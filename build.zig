@@ -1,12 +1,13 @@
 const std = @import("std");
 
-pub fn build(b: *std.build.Builder) !void {
+pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    var zap = b.dependency("zap", .{
+    const zap = b.dependency("zap", .{
         .target = target,
         .optimize = optimize,
+        .openssl = false, // set to true to enable TLS support
     });
 
     inline for ([_]struct {
@@ -38,19 +39,18 @@ pub fn build(b: *std.build.Builder) !void {
 
         var example = b.addExecutable(.{
             .name = ex_name,
-            .root_source_file = .{ .path = ex_src },
+            .root_source_file = b.path(ex_src),
             .target = target,
             .optimize = optimize,
         });
 
-        example.addModule("zap", zap.module("zap"));
-        example.linkLibrary(zap.artifact("facil.io"));
+        example.root_module.addImport("zap", zap.module("zap"));
 
         const example_run = b.addRunArtifact(example);
         example_run_step.dependOn(&example_run.step);
 
         // install the artifact - depending on the "example"
-        const example_build_step = b.addInstallArtifact(example);
+        const example_build_step = b.addInstallArtifact(example, .{});
         example_step.dependOn(&example_build_step.step);
     }
 }

@@ -29,7 +29,7 @@ const fredRequest = struct {
 };
 
 fn getFredSeries(alloc: Allocator, params: fredRequest) ![]u8 {
-    const apiKey = std.os.getenv("FRED_KEY").?;
+    const apiKey = std.posix.getenv("FRED_KEY").?;
     const url = try std.fmt.allocPrint(
         alloc,
         "https://api.stlouisfed.org/fred/series/observations?series_id={s}&api_key={s}&file_type=json&observation_start={s}&frequency={s}",
@@ -42,7 +42,7 @@ fn getFredSeries(alloc: Allocator, params: fredRequest) ![]u8 {
     );
     defer alloc.free(url);
 
-    const output = try std.ChildProcess.exec(.{
+    const output = try std.process.Child.run(.{
         .allocator = alloc,
         .argv = &[_][]const u8{
             "curl",
@@ -108,7 +108,7 @@ fn writeRecentGraph(
     const currentYearStr = MSPoints.getLast().date[0..4];
     const currentYear = try std.fmt.parseUnsigned(u32, currentYearStr, 10);
     for (MSPoints.items) |p| {
-        var year = try std.fmt.parseUnsigned(u32, p.date[0..4], 10);
+        const year = try std.fmt.parseUnsigned(u32, p.date[0..4], 10);
         if (year < currentYear - numYears) {
             continue;
         }
@@ -197,7 +197,7 @@ pub fn main() !void {
     for (sp_items) |value| {
         const date_str = value.object.get("date").?.string;
         const equity_str = value.object.get("value").?.string;
-        var equity_float = std.fmt.parseFloat(f64, equity_str) catch {
+        const equity_float = std.fmt.parseFloat(f64, equity_str) catch {
             continue;
         };
         try MSPoints.append(.{
@@ -221,7 +221,7 @@ pub fn main() !void {
     for (last_items) |value| {
         const date_str = value.object.get("date").?.string;
         const equity_str = value.object.get("value").?.string;
-        var equity_float = std.fmt.parseFloat(f64, equity_str) catch {
+        const equity_float = std.fmt.parseFloat(f64, equity_str) catch {
             continue;
         };
         last_point = .{
@@ -237,7 +237,7 @@ pub fn main() !void {
         const unscaled = p.equity / p.netWorth;
         product *= unscaled;
 
-        const exponent: f32 = 1 / @floatFromInt(f32, idx + 1);
+        const exponent: f32 = 1 / @as(f32, @floatFromInt(idx + 1));
         const geo_mean = std.math.pow(f64, product, exponent);
         MSPoints.items[idx].index = unscaled / geo_mean;
     }

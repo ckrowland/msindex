@@ -1,11 +1,14 @@
 .{
     .name = "msindex",
     .version = "0.0.1",
+    .paths = .{
+        "",
+    },
 
     .dependencies = .{
         .zap = .{
-            .url = "https://github.com/zigzap/zap/archive/refs/tags/v0.1.7-pre.tar.gz",
-            .hash = "1220002d24d73672fe8b1e39717c0671598acc8ec27b8af2e1caf623a4fd0ce0d1bd",
+            .url = "https://github.com/zigzap/zap/archive/refs/tags/v0.8.0.tar.gz",
+            .hash = "12209936c3333b53b53edcf453b1670babb9ae8c2197b1ca627c01e72670e20c1a21",
         }
     }
 }
