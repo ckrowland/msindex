@@ -32,7 +32,7 @@ fn getFredSeries(alloc: Allocator, params: fredRequest) ![]u8 {
     const apiKey = std.posix.getenv("FRED_KEY").?;
     const url = try std.fmt.allocPrint(
         alloc,
-        "https://api.stlouisfed.org/fred/series/observations?series_id={s}&api_key={s}&file_type=json&observation_start={s}&frequency={s}",
+        "https://api.stlouisfed.org/fred/series/observations?series_id={s}&api_key={s}&file_type=json&observation_start={s}&frequency={s}&units=lin",
         .{
             params.seriesID,
             apiKey,
