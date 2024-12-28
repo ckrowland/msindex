@@ -184,7 +184,12 @@ pub fn main() !void {
         MSPoints.items[i].netWorth = net_worth_float;
     }
 
-    const lastQuarterPoint = MSPoints.getLast();
+    //Remove any points without Net Worth
+    var lastQuarterPoint = MSPoints.getLast();
+    while (lastQuarterPoint.netWorth == 0) {
+        _ = MSPoints.pop();
+        lastQuarterPoint = MSPoints.getLast();
+    }
     const sp500Json = try getFredSeries(allocator, .{
         .seriesID = "SP500",
         .observationStart = &advanceMonth(&lastQuarterPoint.date, 1),
