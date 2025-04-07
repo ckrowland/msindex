@@ -1,6 +1,7 @@
 .{
-    .name = "msindex",
-    .version = "0.0.1",
+    .name = .msindex,
+    .version = "0.0.0",
+    .fingerprint = 0xbcea1d28b0a46c84,
     .paths = .{
         "",
     },
