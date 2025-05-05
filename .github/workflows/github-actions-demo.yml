@@ -2,21 +2,23 @@ name: Update Index Value
 run-name: ${{ github.actor }} is updating MS Index
 on:
   schedule:
-    - cron: "0 * * * *" # every day at 6am PST
+    - cron: "2 * * * *" # every day at 6am PST
   #  - cron: "0 14 * * *" # every day at 6am PST
 permissions:
   contents: write
 jobs:
-  Update-MSIndex:
-    runs-on: ubuntu-latest
+  update:
     name: Update MSIndex
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-      - uses: actions/checkout@v4
-      - uses: mlugg/setup-zig@v1
+        uses: actions/checkout@v4
+      - name: Setup zig
+        uses: mlugg/setup-zig@v1
         with:
           version: 0.14.0
-      - run: zig build run-update
+      - name: Run zig update
+        run: zig build run-update
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}/static/json
