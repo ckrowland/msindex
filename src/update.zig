@@ -152,6 +152,7 @@ pub fn main() !void {
     std.debug.assert(try std.json.validate(allocator, equityJson));
     std.debug.assert(try std.json.validate(allocator, netWorthJson));
 
+    std.log.debug("{s}", .{equityJson});
     var equity_tree = try std.json.parseFromSlice(std.json.Value, allocator, equityJson, .{});
     defer equity_tree.deinit();
     const items = equity_tree.value.object.get("observations").?.array.items;

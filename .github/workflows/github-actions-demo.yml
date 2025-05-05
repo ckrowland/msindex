@@ -9,7 +9,7 @@ permissions:
 jobs:
   update:
     name: Update MSIndex
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
