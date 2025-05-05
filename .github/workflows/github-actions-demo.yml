@@ -18,7 +18,9 @@ jobs:
         with:
           version: 0.14.0
       - name: Run zig update
-        run: zig build run-update
+        run: |
+          export FRED_KEY=${{ secrets.API_KEY }}
+          zig build run-update
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}/static/json
