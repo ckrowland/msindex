@@ -1,8 +1,8 @@
 name: Update Index Value
 run-name: ${{ github.actor }} is updating MS Index
-on:
-  schedule:
-    - cron: "6 * * * *" # every day at 6am PST
+on: [push]
+  # schedule:
+  #   - cron: "6 * * * *" # every day at 6am PST
   #  - cron: "0 14 * * *" # every day at 6am PST
 permissions:
   contents: write
