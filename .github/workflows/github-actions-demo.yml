@@ -26,6 +26,7 @@ jobs:
           ls ${{ github.workspace }}/static/json
       - name: Commit report
         run: |
+          git pull
           git config --global user.name 'Connor Rowland'
           git config --global user.email 'connor.k.rowland@icloud.com'
           git commit -am "Update JSON files"
