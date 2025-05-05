@@ -19,7 +19,7 @@ jobs:
           version: 0.14.0
       - name: Run zig update
         run: |
-          export FRED_KEY=${{ secrets.API_KEY }}
+          export FRED_KEY= ${{ secrets.FRED_KEY }}
           zig build run-update
       - name: List files in the repository
         run: |
