@@ -27,7 +27,8 @@ jobs:
           git pull
           git config --global user.name 'Connor Rowland'
           git config --global user.email 'connor.k.rowland@icloud.com'
-          git commit -am "Update JSON files"
+          git add *
+          git commit -m "Update JSON files"
           git push
       - name: Check out pages branch 
         uses: actions/checkout@v4
@@ -38,5 +39,6 @@ jobs:
           git fetch origin main
           git checkout origin/main --no-overlay -- static/json
           git diff
-          git commit -am "Update JSON files"
+          git add *
+          git commit -m "Update JSON files"
           git push
