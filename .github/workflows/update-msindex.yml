@@ -38,7 +38,9 @@ jobs:
         run: |
           git fetch origin main
           git checkout origin/main --no-overlay -- static/json
-          git diff
+          rm -rf json
+          mv static/json json
+          rm -rf static
           git add *
           git commit -m "Update JSON files"
           git push
