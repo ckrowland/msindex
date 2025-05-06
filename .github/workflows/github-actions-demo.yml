@@ -1,10 +1,12 @@
 name: Update Index Value
-run-name: ${{ github.actor }} is updating MS Index
+
 on:
   schedule:
-   - cron: '0 * * * *' # every day at 6am PST
+    - cron: '5 * * * *'
+
 permissions:
   contents: write
+
 jobs:
   update:
     name: Update MSIndex
