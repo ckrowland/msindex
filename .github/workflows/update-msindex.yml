@@ -29,4 +29,13 @@ jobs:
           git config --global user.email 'connor.k.rowland@icloud.com'
           git commit -am "Update JSON files"
           git push
-          git push origin main:pages
+      - name: Check out pages branch 
+        uses: actions/checkout@v4
+        with:
+          ref: pages
+        run: |
+          git fetch origin main
+          git checkout origin/main --no-overlay -- static/json
+          git diff
+          git commit -am "Update JSON files"
+          git push
