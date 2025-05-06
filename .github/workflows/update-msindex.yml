@@ -28,4 +28,5 @@ jobs:
           git config --global user.name 'Connor Rowland'
           git config --global user.email 'connor.k.rowland@icloud.com'
           git commit -am "Update JSON files"
+          git push
           git push origin main:pages
