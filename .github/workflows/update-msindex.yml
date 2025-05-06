@@ -1,8 +1,8 @@
 name: Update Index Value
 
-on: [push]
-#  schedule:
-#    - cron: '0 1 * * 1-5' # every workday at 6pm PST
+on:
+  schedule:
+    - cron: '0 1 * * 1-5' # every workday at 6pm PST
 
 permissions:
   contents: write
