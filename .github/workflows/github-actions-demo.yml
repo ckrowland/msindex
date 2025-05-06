@@ -1,9 +1,8 @@
 name: Update Index Value
 run-name: ${{ github.actor }} is updating MS Index
-on: [push]
-  # schedule:
-  #   - cron: "6 * * * *" # every day at 6am PST
-  #  - cron: "0 14 * * *" # every day at 6am PST
+on:
+  schedule:
+   - cron: '0 * * * *' # every day at 6am PST
 permissions:
   contents: write
 jobs:
@@ -21,9 +20,9 @@ jobs:
         env:
           FRED_KEY: ${{ secrets.FRED_KEY }}
         run: zig build run-update
-      - name: List files in the repository
+      - name: Commit report
         run: |
-          ls ${{ github.workspace }}/static/json
+          git diff 
       - name: Commit report
         run: |
           git pull
