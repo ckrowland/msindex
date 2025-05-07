@@ -27,7 +27,7 @@ jobs:
           git pull
           git config --global user.name 'Connor Rowland'
           git config --global user.email 'connor.k.rowland@icloud.com'
-          git add *
+          git add -A 
           git commit -m "Update JSON files"
           git push
       - name: Check out pages branch 
@@ -41,6 +41,6 @@ jobs:
           rm -rf json
           mv static/json json
           rm -rf static
-          git add *
+          git add -A
           git commit -m "Update JSON files"
           git push
