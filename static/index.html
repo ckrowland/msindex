@@ -1,113 +1,109 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta content="width=device-width,minimum-scale=1" name="viewport">
-        <title>MS Index</title>
-        <link rel="shortcut icon" type="image/png" href="/img/conifer.png">
-        <link rel="stylesheet" type="text/css" href="/css/global.css">
-        <script type="module" src="/js/d3.v7.min.js"></script>
-        <script type="module" src="/js/main.js"></script>
-    </head>
 
-    <body>
-        <div class="pad2y limiter content">
-            <h1>Mises Stationarity Index</h1>
-            <div class="body">
-                <p id="currentindex"></p>
-                <div class="tab">
-                    <button class="tablinks" id="maxQButton">Max Quartiles</button>
-                    <button class="tablinks" id="maxButton">Max</button>
-                    <button class="tablinks" id="tenYearButton">10 Year</button>
-                    <button class="tablinks" id="fiveYearButton">5 Year</button>
-                    <button class="tablinks" id="oneYearButton">1 Year</button>
-                </div>
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width,minimum-scale=1" name="viewport" />
+  <title>MS Index</title>
+  <link rel="shortcut icon" type="image/png" href="ckrowland.github.io/msindex/img/conifer.png" />
+  <link rel="stylesheet" type="text/css" href="ckrowland.github.io/msindex/css/global.css" />
+  <script type="module" src="ckrowland.github.io/msindex/js/d3.v7.min.js"></script>
+  <script type="module" src="ckrowland.github.io/msindex/js/main.js"></script>
+</head>
 
-                <div id="maxQ" class="tabcontent"></div>
-                <div id="max" class="tabcontent"></div>
-                <div id="tenYear" class="tabcontent"></div>
-                <div id="fiveYear" class="tabcontent"></div>
-                <div id="oneYear" class="tabcontent"></div>
-                <h2>What is it?</h2>
-                <p>
-                    An index presented in the book: The Dao of Capital
-                    by Mark Spitznagel. A similiar unscaled index can be found 
-		    <a href="https://fred.stlouisfed.org/series/NCBCEPNW">here</a>.
-                </p>
+<body>
+  <div class="pad2y limiter content">
+    <h1>Mises Stationarity Index</h1>
+    <div class="body">
+      <p id="currentindex"></p>
+      <div class="tab">
+        <button class="tablinks" id="maxQButton">Max Quartiles</button>
+        <button class="tablinks" id="maxButton">Max</button>
+        <button class="tablinks" id="tenYearButton">10 Year</button>
+        <button class="tablinks" id="fiveYearButton">5 Year</button>
+        <button class="tablinks" id="oneYearButton">1 Year</button>
+      </div>
 
-                <h2>How is it calculated?</h2>
-                <p>
-                    All source code is available 
-                    <a href="https://github.com/ckrowland/msindex">here</a>.
-                </p>
-                <p>
-                    The MS index is the expected return on invested capital 
-                    (equity) divided by the invested capitals replacement value 
-                    (net worth), and can be calculated for the U.S. as follows.
-                </p>
-                <object data="/img/equation.svg" type="image/svg+xml">
-                </object>
-                <p>
-                    The Z.1 Federal quarterly reports give us the data we need.
-                    On table B.103 (Balance Sheet of Nonfinancial Corporate
-                    Business) line 40 holds the market value of equities
-                    outstanding and line 39 holds the net worth.
-                </p>
-                <p>
-                    These reports only come out each quarter, therefore we want
-                    a way to estimate the MS Index in the meantime. We can use
-                    the U.S. stock market value (S&P 500 Index) to estimate U.S.
-                    corporate equity and the most recent Z1 net worth number to
-                    estimate the current U.S. corporate net worth.
-                </p>
+      <div id="maxQ" class="tabcontent"></div>
+      <div id="max" class="tabcontent"></div>
+      <div id="tenYear" class="tabcontent"></div>
+      <div id="fiveYear" class="tabcontent"></div>
+      <div id="oneYear" class="tabcontent"></div>
+      <h2>What is it?</h2>
+      <p>
+        An index presented in the book: The Dao of Capital by Mark Spitznagel.
+        A similiar unscaled index can be found
+        <a href="https://fred.stlouisfed.org/series/NCBCEPNW">here</a>.
+      </p>
 
-                <p>
-                    The final step requires us to scale the index values by the
-                    running
-                    <a href="https://en.wikipedia.org/wiki/Geometric_mean">
-                        geometric mean
-                    </a>
-                    (P.231 Dao of Capital). To do this, for each nth point
-                    <ol>
-                        <li>
-                            Multiply all previous unscaled index values together
-                        </li>
-                        <li>
-                            Take the nth root of step 1
-                        </li>
-                        <li>
-                            Divide the current index value by step 2
-                        </li>
-                    </ol>
-                    This gives us the graph seen above.
-                </p>
+      <h2>How is it calculated?</h2>
+      <p>
+        All source code is available
+        <a href="https://github.com/ckrowland/msindex">here</a>.
+      </p>
+      <p>
+        The MS index is the expected return on invested capital (equity)
+        divided by the invested capitals replacement value (net worth), and
+        can be calculated for the U.S. as follows.
+      </p>
+      <object data="/img/equation.svg" type="image/svg+xml"></object>
+      <p>
+        The Z.1 Federal quarterly reports give us the data we need. On table
+        B.103 (Balance Sheet of Nonfinancial Corporate Business) line 40 holds
+        the market value of equities outstanding and line 39 holds the net
+        worth.
+      </p>
+      <p>
+        These reports only come out each quarter, therefore we want a way to
+        estimate the MS Index in the meantime. We can use the U.S. stock
+        market value (S&P 500 Index) to estimate U.S. corporate equity and the
+        most recent Z1 net worth number to estimate the current U.S. corporate
+        net worth.
+      </p>
 
-                <h2>Data Files</h2>
-                <p>The MS Index data files can be downloaded here</p>
-                <ul>
-                    <li><a href="/json/max.json">Max</a></li>
-                    <li><a href="/json/tenYear.json">Ten Year</a></li>
-                    <li><a href="/json/fiveYear.json">Five Year</a></li>
-                    <li><a href="/json/oneYear.json">One Year</a></li>
-                </ul>
+      <p>
+        The final step requires us to scale the index values by the running
+      </p>
+      <p>
+        <a href="https://en.wikipedia.org/wiki/Geometric_mean">
+          geometric mean
+        </a>
+        (P.231 Dao of Capital). To do this, for each nth point
+      </p>
 
-                <p>
-                    Since FED data starts at 1945, the 1900-45 data can be
-                    found
-                    <a href="http://www.smithers.co.uk/q_faqs/us-cape-and-q-chart/">
-                        here</a>.
-                </p>
-                <p>
-                    Feel free to contact me with suggestions.
-                    <a href="mailto:connor.k.rowland@icloud.com">Email</a>
-                    or
-                    <a href="https://www.x.com/connorkrowland">Twitter</a>
-                </p>
-                <p>
-		    If you want to help keep the server running, you can donate
-                    <a href="https://buymeacoffee.com/ckrowland">here</a>.
-                </p>
-            </div>
-        </div>
-    </body>
+      <ol>
+        <li>Multiply all previous unscaled index values together</li>
+        <li>Take the nth root of step 1</li>
+        <li>Divide the current index value by step 2</li>
+      </ol>
+      This gives us the graph seen above.
+
+      <h2>Data Files</h2>
+      <p>The MS Index data files can be downloaded here</p>
+      <ul>
+        <li><a href="/json/max.json">Max</a></li>
+        <li><a href="/json/tenYear.json">Ten Year</a></li>
+        <li><a href="/json/fiveYear.json">Five Year</a></li>
+        <li><a href="/json/oneYear.json">One Year</a></li>
+      </ul>
+
+      <p>
+        Since FED data starts at 1945, the 1900-45 data can be found
+        <a href="http://www.smithers.co.uk/q_faqs/us-cape-and-q-chart/">
+          here</a>.
+      </p>
+      <p>
+        Feel free to contact me with suggestions.
+        <a href="mailto:connor.k.rowland@icloud.com">Email</a>
+        or
+        <a href="https://www.x.com/connorkrowland">Twitter</a>
+      </p>
+      <p>
+        If you want to help keep the server running, you can donate
+        <a href="https://buymeacoffee.com/ckrowland">here</a>.
+      </p>
+    </div>
+  </div>
+</body>
+
 </html>
