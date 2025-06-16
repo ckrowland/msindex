@@ -1,6 +1,6 @@
 # Mises Stationarity Index
 
-The code to run [msindex.net](https://www.msindex.net).
+The code to run [ckrowland.github.io/msindex](https://ckrowland.github.io/msindex/).
 
 ## Run Locally
 
@@ -24,5 +24,5 @@ To update the chart after some time you have to run this again.
 
 ```bash
 export FRED_KEY=<your_fred_key>
-zig build run-update 
+zig build run-update
 ```
