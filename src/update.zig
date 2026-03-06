@@ -207,7 +207,7 @@ pub fn main() !void {
         };
         try MSPoints.append(.{
             .date = date_str[0..10].*,
-            .equity = equity_float * 10,
+            .equity = equity_float * 10000,
             .netWorth = lastQuarterPoint.netWorth,
         });
     }
@@ -231,7 +231,7 @@ pub fn main() !void {
         };
         last_point = .{
             .date = date_str[0..10].*,
-            .equity = equity_float * 10,
+            .equity = equity_float * 10000,
             .netWorth = lastQuarterPoint.netWorth,
         };
     }
