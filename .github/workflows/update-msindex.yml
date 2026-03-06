@@ -1,8 +1,8 @@
 name: Update Index Value
 
-on:
-  schedule:
-    - cron: '0 1 * * 1-5' # every workday at 6pm PST
+on: workflow_dispatch
+  #schedule:
+  #  - cron: '0 1 * * 1-5' # every workday at 6pm PST
 
 permissions:
   contents: write
@@ -24,9 +24,10 @@ jobs:
         run: zig build run-update
       - name: Commit to main
         run: |
-          git pull
           git config --global user.name 'Connor Rowland'
           git config --global user.email 'connor.k.rowland@icloud.com'
+          git config pull.ff only
+          git pull
           git add -A 
           git commit -m "Update JSON files"
           git push
