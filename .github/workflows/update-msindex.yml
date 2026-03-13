@@ -27,9 +27,8 @@ jobs:
           git config --global user.name 'Connor Rowland'
           git config --global user.email 'connor.k.rowland@icloud.com'
           git config --global pull.rebase true
+          git commit -am "Update JSON files"
           git pull
-          git add -A 
-          git commit -m "Update JSON files"
           git push
       - name: Check out pages branch 
         uses: actions/checkout@v4
