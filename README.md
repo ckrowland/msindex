@@ -1,6 +1,6 @@
 # Mises Stationarity Index
 
-The code to run [ckrowland.github.io/msindex](https://ckrowland.github.io/msindex/).
+The code to run [msindex.net](https://msindex.net).
 
 ## Run Locally
 
