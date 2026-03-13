@@ -26,7 +26,7 @@ jobs:
         run: |
           git config --global user.name 'Connor Rowland'
           git config --global user.email 'connor.k.rowland@icloud.com'
-          git config pull.ff only
+          git config --global pull.rebase true
           git pull
           git add -A 
           git commit -m "Update JSON files"
