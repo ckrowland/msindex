@@ -2,8 +2,9 @@ name: Update Index Value
 
 on:
   schedule:
-    - cron: '10 2 * * 1-5' # every workday at 6pm PST
-
+    - cron: '30 19 * * 1-5'
+      timezone: "America/New_York"
+      
 permissions:
   contents: write
 
