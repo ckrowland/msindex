@@ -29,7 +29,7 @@ jobs:
           git config --global pull.rebase true
           git commit -am "Update JSON files"
           git pull
-          git push
+          git push -f
       - name: Check out pages branch 
         uses: actions/checkout@v4
         with:
@@ -43,4 +43,4 @@ jobs:
           rm -rf static
           git add -A
           git commit -m "Update JSON files"
-          git push
+          git push -f
