@@ -2,7 +2,7 @@ name: Update Index Value
 
 on:
   schedule:
-    - cron: '0 15 * * 1-5'
+    - cron: '0 17 * * 1-5'
       timezone: "America/New_York"
       
 permissions:
